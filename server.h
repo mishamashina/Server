@@ -13,6 +13,7 @@ class Server : public QTcpServer
 public:
     Server();
     QTcpSocket *socket;
+    //QTcpSocket *socket_test;
 
 private:
     QVector <QTcpSocket*> Sockets;
@@ -23,6 +24,7 @@ private:
 public slots:
     void incomingConnection(qintptr socketDescriptor);
     void slotReadyRead();
+    void slotbytesWritten(qint64 bytes);
 };
 
 #endif // SERVER_H

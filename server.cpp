@@ -17,18 +17,30 @@ void Server::incomingConnection(qintptr socketDescriptor) //This virtual functio
 {
     socket = new QTcpSocket;
     socket->setSocketDescriptor(socketDescriptor); //  The socketDescriptor argument is the native socket descriptor for the accepted connection
-    //qDebug() << socket->socketDescriptor();
     connect(socket, &QTcpSocket::readyRead, this, &Server::slotReadyRead);
+    connect(socket, &QTcpSocket::bytesWritten, this, &Server::slotbytesWritten);
     connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
 
     Sockets.push_back(socket);
-    qDebug() << "Client connected" << socketDescriptor;
+
+    qDebug() << "Client connected";
+    qDebug() << "INFORMATION ABOUT SERVER SOCKET";
+    qDebug() << "socketDescriptor()" << socket->socketDescriptor();
+    qDebug() << "isValid()" << socket->isValid();
+    qDebug() << "PeerPort()" << socket->peerPort() << "PeerAddress()" << socket->peerAddress() << "PeerName()" << socket->peerName();
+    qDebug() << "localPort()" << socket->localPort() << "localAddress()" << socket->localAddress();
+}
+
+void Server::slotbytesWritten(qint64 bytes)
+{
+    qDebug() << "bytes" << bytes;
 }
 
 void Server::slotReadyRead()
 {
-    socket = (QTcpSocket*)sender();
-    QDataStream in(socket);
+    socket = (QTcpSocket*)sender(); //Returns a pointer to the object that sent the signal; signal - readyRead; object - server socket
+
+    QDataStream in(socket); // Working with data in server socket - port 2323
     in.setVersion(QDataStream::Qt_5_15);
     if(in.status() == QDataStream::Ok)
     {
@@ -54,7 +66,7 @@ void Server::slotReadyRead()
             QTime time;
             in >> time >> str;
             nextBlockSize = 0;
-            qDebug() << str;
+            qDebug() << "Receiver Data" << str;
             SendToClient(str);
             break;
         }
