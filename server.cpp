@@ -11,6 +11,7 @@ Server::Server()
         qDebug() << "Error";
     }
     nextBlockSize = 0;
+    connect(this, &Server::signalConnected, this, &Server::slotConnected);
 }
 
 void Server::incomingConnection(qintptr socketDescriptor) //This virtual function is called by QTcpServer when a new connection is available
@@ -20,7 +21,9 @@ void Server::incomingConnection(qintptr socketDescriptor) //This virtual functio
     //connect(socket, &QTcpSocket::readyRead, this, &Server::slotReadyRead);
     connect(socket, &QTcpSocket::bytesWritten, this, &Server::slotbytesWritten);
     connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
-    connect(this, &Server::signalConnected, this, &Server::slotConnected);
+
+    //connect(this, &Server::signalConnected, this, &Server::slotConnected);
+    connect(socket, &QTcpSocket::stateChanged, this, &Server::slotChanged);
 
     Sockets.push_back(socket);
 
@@ -47,14 +50,41 @@ void Server::slotConnected()
     //QThread *thread = new QThread(this);
     while (i < 100)
     {
-        //QThread::sleep(1);
-        qDebug() << "Вошло";
-        SendToClient(QString::number(i));
-        //QThread::sleep(1);
-        i ++;
-        QThread::sleep(1);
-        //socket->;
+        if (socket->state() == QAbstractSocket::ConnectedState)
+        {
+            qDebug() << "Вошло i=" << i;
+            SendToClient(QString::number(i) + " " + QString::number(i+1) + " " + QString::number(i+2) + " " + QString::number(i+3));
+            qDebug() << "Отправил";
+            i ++;
+            QThread::sleep(1);
+        }
     }
+}
+
+void Server::slotChanged()
+{
+    if (socket->state() == QAbstractSocket::UnconnectedState)
+    {
+        qDebug() << "Клиент отключился";
+        // socket->abort();
+        // Sockets.clear();
+        // Server*;
+    }
+    // if (socket->state() == QAbstractSocket::ConnectedState)
+    // {
+    //     qDebug() << "Клиент подключился";
+    //     while (i < 100)
+    //     {
+    //         if (socket->state() == QAbstractSocket::ConnectedState)
+    //         {
+    //             qDebug() << "Вошло i=" << i;
+    //             SendToClient(QString::number(i) + " " + QString::number(i+1) + " " + QString::number(i+2) + " " + QString::number(i+3));
+    //             qDebug() << "Отправил";
+    //             i ++;
+    //             QThread::sleep(1);
+    //         }
+    //     }
+    // }
 }
 
 // void Server::slotReadyRead()

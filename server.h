@@ -32,6 +32,7 @@ public slots:
     //void slotReadyRead();
     void slotbytesWritten(qint64 bytes);
     void slotConnected();
+    void slotChanged();
 
 signals:
     void signalConnected();
