@@ -16,7 +16,6 @@ public:
     Server();
     QTcpSocket *socket;
     void CheckConnection();
-    //QTcpSocket *socket_test;
     void SendToClient(QString str);
 
 private:
@@ -24,19 +23,12 @@ private:
     QByteArray Data;
     quint16 nextBlockSize;
     int i = 0;
-    //void SendToClient(QString str);
-    //void CheckConnection();
 
 public slots:
     void incomingConnection(qintptr socketDescriptor);
-    //void slotReadyRead();
     void slotbytesWritten(qint64 bytes);
-    void slotConnected();
-    void slotChanged();
-
-signals:
-    void signalConnected();
-
+    void slotNewConnection();
+    void slotDisconnected();
 };
 
 #endif // SERVER_H
