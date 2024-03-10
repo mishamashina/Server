@@ -40,14 +40,13 @@ void Server::slotbytesWritten(qint64 bytes)
 void Server::slotNewConnection()
 {
     int i = 0;
-    while(i < 5)
+    while(i < 3)
     {
         if (socket->state() == QAbstractSocket::ConnectedState)
         {
             qDebug() << "Вошло i=" << i;
             SendToClient(QString::number(i) + " " + QString::number(i+1) + " " + QString::number(i+2) + " " + QString::number(i+3));
             i ++;
-            QThread::sleep(1);
         }
         else
         {
@@ -58,7 +57,7 @@ void Server::slotNewConnection()
 
 void Server::slotDisconnected()
 {
-    qDebug() << "slotDisconnected Server" << socket->state();
+    qDebug() << "slotDisconnected Server";
     socket = (QTcpSocket*)sender();
     qDebug() << "Все сокеты" << Sockets;
     Sockets.remove(Sockets.indexOf(socket));
@@ -78,11 +77,8 @@ void Server::SendToClient(QString str)
         out << quint16(Data.size() - sizeof(quint16));
         for(int i = 0; i < Sockets.size(); i++)
         {
-            qDebug() << "Sockets[i]" << Sockets[i];
             Sockets[i]->write(Data);
-            qDebug() << "Sockets[i]" << Sockets[i];
-            Sockets[i]->waitForReadyRead(300);
-            //qDebug() << "Sockets[i]" << Sockets[i];
+            Sockets[i]->waitForReadyRead(1000);
         }
     }
 }

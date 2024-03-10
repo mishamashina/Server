@@ -5,9 +5,7 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QDataStream>
-#include <QTimer>
 #include <QTime>
-#include <QThread>
 
 class Server : public QTcpServer
 {
