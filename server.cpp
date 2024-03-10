@@ -40,18 +40,11 @@ void Server::slotbytesWritten(qint64 bytes)
 void Server::slotNewConnection()
 {
     int i = 0;
-    while(i < 3)
+    for (;;)
     {
-        if (socket->state() == QAbstractSocket::ConnectedState)
-        {
-            qDebug() << "Вошло i=" << i;
-            SendToClient(QString::number(i) + " " + QString::number(i+1) + " " + QString::number(i+2) + " " + QString::number(i+3));
-            i ++;
-        }
-        else
-        {
-            break;
-        }
+        this->waitForNewConnection(100);
+        SendToClient(QString::number(i) + " " + QString::number(i+1) + " " + QString::number(i+2) + " " + QString::number(i+3));
+        i ++;
     }
 }
 
@@ -67,19 +60,18 @@ void Server::slotDisconnected()
 
 void Server::SendToClient(QString str)
 {
-    if (socket->state() == QAbstractSocket::ConnectedState)
+    Data.clear();
+    QDataStream out(&Data, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_15);
+    out << quint16(0) << QTime::currentTime() << str;
+    out.device()->seek(0);
+    out << quint16(Data.size() - sizeof(quint16));
+    for(int i = 0; i < Sockets.size(); i++)
     {
-        Data.clear();
-        QDataStream out(&Data, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_15);
-        out << quint16(0) << QTime::currentTime() << str;
-        out.device()->seek(0);
-        out << quint16(Data.size() - sizeof(quint16));
-        for(int i = 0; i < Sockets.size(); i++)
+        if (Sockets[i]->state() == QAbstractSocket::ConnectedState)
         {
             Sockets[i]->write(Data);
-            Sockets[i]->waitForReadyRead(1000);
+            Sockets[i]->waitForReadyRead(700);
         }
     }
 }
-

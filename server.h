@@ -13,7 +13,6 @@ class Server : public QTcpServer
 public:
     Server();
     QTcpSocket *socket;
-    void CheckConnection();
     void SendToClient(QString str);
 
 private:
