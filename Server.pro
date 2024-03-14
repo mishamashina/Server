@@ -1,6 +1,6 @@
 QT -= gui
 
-QT += core network
+QT += core network widgets serialport sql
 
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -11,7 +11,10 @@ CONFIG -= app_bundle
 
 SOURCES += \
         main.cpp \
-        server.cpp
+        mainwindow.cpp \
+        serialportmanager.cpp \
+        serialportreader.cpp \
+        server.cpp \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -19,4 +22,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    server.h
+    mainwindow.h \
+    serialportmanager.h \
+    serialportreader.h \
+    server.h \

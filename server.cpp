@@ -12,7 +12,10 @@ Server::Server()
     }
     nextBlockSize = 0;
 
-    connect(this, &QTcpServer::newConnection, this, &Server::slotNewConnection);
+    QTimer *timer = new QTimer(this);
+    timer->setInterval(300);
+    connect(timer, &QTimer::timeout, this, &Server::dataReceiver);
+    timer->start();
 }
 
 void Server::incomingConnection(qintptr socketDescriptor) //This virtual function is called by QTcpServer when a new connection is available
@@ -37,15 +40,9 @@ void Server::slotbytesWritten(qint64 bytes)
     qDebug() << "bytes" << bytes;
 }
 
-void Server::slotNewConnection()
+void Server::dataReceiver()
 {
-    int i = 0;
-    for (;;)
-    {
-        this->waitForNewConnection(100);
-        SendToClient(QString::number(i) + " " + QString::number(i+1) + " " + QString::number(i+2) + " " + QString::number(i+3));
-        i ++;
-    }
+    emit dataSend();
 }
 
 void Server::slotDisconnected()
@@ -71,7 +68,7 @@ void Server::SendToClient(QString str)
         if (Sockets[i]->state() == QAbstractSocket::ConnectedState)
         {
             Sockets[i]->write(Data);
-            Sockets[i]->waitForReadyRead(700);
+            Sockets[i]->waitForReadyRead(1);
         }
     }
 }
