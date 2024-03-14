@@ -9,7 +9,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent)
 {
-    setWindowTitle("Project");
+    this->setWindowTitle("Project");
     this->resize(1650, 950);
 
     tabs = new QTabWidget(this);

@@ -10,7 +10,8 @@ SerialPortManager::SerialPortManager()
     timer->start();
 }
 
-void SerialPortManager::portsInterrogate(){
+void SerialPortManager::portsInterrogate()
+{
     QList<QSerialPortInfo> portsInfo = QSerialPortInfo::availablePorts();
     for(auto portInfo : portsInfo){
         bool isBusy = false;
